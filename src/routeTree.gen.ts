@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminTutorialRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminPracticeRouteImport } from './routes/_authenticated/admin.practice'
 import { Route as AuthenticatedAdminPlansRouteImport } from './routes/_authenticated/admin.plans'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin.orders'
+import { Route as AuthenticatedAdminMessagesRouteImport } from './routes/_authenticated/admin.messages'
 import { Route as AuthenticatedAdminContentRouteImport } from './routes/_authenticated/admin.content'
 
 const TutorialRoute = TutorialRouteImport.update({
@@ -133,6 +134,12 @@ const AuthenticatedAdminOrdersRoute =
     path: '/orders',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminMessagesRoute =
+  AuthenticatedAdminMessagesRouteImport.update({
+    id: '/messages',
+    path: '/messages',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminContentRoute =
   AuthenticatedAdminContentRouteImport.update({
     id: '/content',
@@ -155,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/practice': typeof AuthenticatedPracticeRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/admin/practice': typeof AuthenticatedAdminPracticeRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/practice': typeof AuthenticatedPracticeRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/admin/content': typeof AuthenticatedAdminContentRoute
+  '/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/admin/practice': typeof AuthenticatedAdminPracticeRoute
@@ -200,6 +209,7 @@ export interface FileRoutesById {
   '/_authenticated/practice': typeof AuthenticatedPracticeRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/_authenticated/admin/content': typeof AuthenticatedAdminContentRoute
+  '/_authenticated/admin/messages': typeof AuthenticatedAdminMessagesRoute
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRoute
   '/_authenticated/admin/plans': typeof AuthenticatedAdminPlansRoute
   '/_authenticated/admin/practice': typeof AuthenticatedAdminPracticeRoute
@@ -224,6 +234,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/checkout/$planId'
     | '/admin/content'
+    | '/admin/messages'
     | '/admin/orders'
     | '/admin/plans'
     | '/admin/practice'
@@ -245,6 +256,7 @@ export interface FileRouteTypes {
     | '/practice'
     | '/checkout/$planId'
     | '/admin/content'
+    | '/admin/messages'
     | '/admin/orders'
     | '/admin/plans'
     | '/admin/practice'
@@ -268,6 +280,7 @@ export interface FileRouteTypes {
     | '/_authenticated/practice'
     | '/checkout/$planId'
     | '/_authenticated/admin/content'
+    | '/_authenticated/admin/messages'
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/plans'
     | '/_authenticated/admin/practice'
@@ -431,6 +444,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminOrdersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/messages': {
+      id: '/_authenticated/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AuthenticatedAdminMessagesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/content': {
       id: '/_authenticated/admin/content'
       path: '/content'
@@ -443,6 +463,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminContentRoute: typeof AuthenticatedAdminContentRoute
+  AuthenticatedAdminMessagesRoute: typeof AuthenticatedAdminMessagesRoute
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRoute
   AuthenticatedAdminPlansRoute: typeof AuthenticatedAdminPlansRoute
   AuthenticatedAdminPracticeRoute: typeof AuthenticatedAdminPracticeRoute
@@ -453,6 +474,7 @@ interface AuthenticatedAdminRouteChildren {
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminContentRoute: AuthenticatedAdminContentRoute,
+  AuthenticatedAdminMessagesRoute: AuthenticatedAdminMessagesRoute,
   AuthenticatedAdminOrdersRoute: AuthenticatedAdminOrdersRoute,
   AuthenticatedAdminPlansRoute: AuthenticatedAdminPlansRoute,
   AuthenticatedAdminPracticeRoute: AuthenticatedAdminPracticeRoute,
