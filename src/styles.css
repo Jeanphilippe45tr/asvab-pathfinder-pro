@@ -131,5 +131,7 @@
 @utility delay-100 { animation-delay: .1s; }
 @utility delay-200 { animation-delay: .2s; }
 @utility delay-300 { animation-delay: .3s; }
+@utility delay-400 { animation-delay: .4s; }
 @utility delay-500 { animation-delay: .5s; }
+
 
