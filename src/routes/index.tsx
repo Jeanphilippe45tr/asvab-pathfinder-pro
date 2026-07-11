@@ -18,8 +18,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "ASVAB Pro — Master the ASVAB & Boost Your AFQT" },
       { name: "description", content: "Realistic ASVAB practice across all 9 subtests. Adaptive drills, full-length simulations, and score analytics built by veterans and educators." },
-      { property: "og:title", content: "ASVAB Pro — Master the ASVAB" },
-      { property: "og:description", content: "Structured prep across all 9 ASVAB subtests. Score higher on the AFQT." },
+      { property: "og:title", content: "ASVAB Pro — Master the ASVAB & Boost Your AFQT" },
+      { property: "og:description", content: "Realistic ASVAB practice across all 9 subtests. Adaptive drills, full-length simulations, and score analytics built by veterans and educators." },
     ],
   }),
   loader: ({ context }) => {
