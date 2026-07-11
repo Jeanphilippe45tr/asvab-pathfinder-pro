@@ -41,22 +41,34 @@ function Contact() {
 
   return (
     <SitePage footerData={settings}>
-      <section className="mx-auto max-w-6xl px-4 py-20 md:px-8">
-        <h1 className="text-4xl font-bold md:text-5xl">Contact us</h1>
-        <p className="mt-3 max-w-xl text-muted-foreground">Questions about plans, content, or your account? We're here to help.</p>
+      <section className="relative overflow-hidden bg-hero text-navy-foreground">
+        <div className="mx-auto max-w-4xl px-4 py-20 text-center md:px-8 md:py-24 animate-fade-in-up">
+          <div className="inline-block rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs uppercase tracking-wider">Contact</div>
+          <h1 className="mt-4 text-4xl font-bold md:text-6xl">We're here to help.</h1>
+          <p className="mt-4 text-lg opacity-90">Questions about plans, content, or your account? Reach out — a real human replies within one business day.</p>
+        </div>
+      </section>
 
-        <div className="mt-12 grid gap-8 md:grid-cols-[1fr_1.4fr]">
-          <div className="space-y-4">
-            <div className="flex items-start gap-3"><Mail className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Email</div><div className="text-sm text-muted-foreground">{settings.contact_email}</div></div></div>
-            <div className="flex items-start gap-3"><Phone className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Phone</div><div className="text-sm text-muted-foreground">{settings.contact_phone}</div></div></div>
-            <div className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Address</div><div className="text-sm text-muted-foreground">{settings.contact_address}</div></div></div>
+      <section className="mx-auto max-w-6xl px-4 py-16 md:px-8">
+        <div className="grid gap-8 md:grid-cols-[1fr_1.4fr]">
+          <div className="space-y-4 animate-fade-in-up">
+            <Card className="p-5 shadow-card"><div className="flex items-start gap-3"><Mail className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Email</div><div className="text-sm text-muted-foreground">{settings.contact_email}</div></div></div></Card>
+            <Card className="p-5 shadow-card"><div className="flex items-start gap-3"><Phone className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Phone</div><div className="text-sm text-muted-foreground">{settings.contact_phone}</div></div></div></Card>
+            <Card className="p-5 shadow-card"><div className="flex items-start gap-3"><MapPin className="mt-0.5 h-5 w-5 text-accent" /><div><div className="font-semibold">Address</div><div className="text-sm text-muted-foreground">{settings.contact_address}</div></div></div></Card>
+            <div className="rounded-lg border bg-secondary/40 p-5 text-sm text-muted-foreground">
+              <div className="font-semibold text-foreground">Support hours</div>
+              <div className="mt-1">Mon–Fri · 9am – 6pm ET</div>
+              <div>Sat · 10am – 2pm ET</div>
+            </div>
           </div>
-          <Card className="p-6 shadow-card">
-            <form onSubmit={submit} className="space-y-4">
+          <Card className="p-6 shadow-card animate-fade-in-up delay-200">
+            <h2 className="text-2xl font-bold">Send us a message</h2>
+            <p className="mt-1 text-sm text-muted-foreground">We reply within one business day.</p>
+            <form onSubmit={submit} className="mt-6 space-y-4">
               <div><Label>Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required maxLength={100} /></div>
               <div><Label>Email</Label><Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required maxLength={200} /></div>
-              <div><Label>Message</Label><Textarea rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required maxLength={4000} /></div>
-              <Button type="submit" disabled={submitting} className="w-full">{submitting ? "Sending..." : "Send message"}</Button>
+              <div><Label>Message</Label><Textarea rows={6} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required maxLength={4000} /></div>
+              <Button type="submit" disabled={submitting} className="w-full bg-gold text-gold-foreground hover:opacity-90">{submitting ? "Sending..." : "Send message"}</Button>
             </form>
           </Card>
         </div>
@@ -64,3 +76,4 @@ function Contact() {
     </SitePage>
   );
 }
+
