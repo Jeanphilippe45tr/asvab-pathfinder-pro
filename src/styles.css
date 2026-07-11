@@ -107,3 +107,29 @@
 @utility bg-gold { background-image: var(--gradient-gold); }
 @utility shadow-elevated { box-shadow: var(--shadow-elevated); }
 @utility shadow-card { box-shadow: var(--shadow-card); }
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes float-slow {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@utility animate-fade-in-up { animation: fade-in-up 0.7s ease-out both; }
+@utility animate-fade-in { animation: fade-in 0.8s ease-out both; }
+@utility animate-float { animation: float-slow 6s ease-in-out infinite; }
+@utility hover-lift { transition: transform .25s ease, box-shadow .25s ease; }
+@utility hover-lift-on { &:hover { transform: translateY(-4px); box-shadow: var(--shadow-elevated); } }
+@utility delay-100 { animation-delay: .1s; }
+@utility delay-200 { animation-delay: .2s; }
+@utility delay-300 { animation-delay: .3s; }
+@utility delay-500 { animation-delay: .5s; }
+
