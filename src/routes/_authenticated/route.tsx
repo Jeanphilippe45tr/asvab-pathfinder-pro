@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, LayoutDashboard, BookOpen, User, LogOut, Settings, Menu } from "lucide-react";
+import { Shield, LayoutDashboard, BookOpen, User, LogOut, Settings, Menu, Mail, BarChart3, ShoppingCart, DollarSign, FileText } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
@@ -43,10 +43,12 @@ function AuthLayout() {
           <>
             <div className="mt-6 px-3 text-xs font-semibold uppercase text-muted-foreground">Admin</div>
             <NavItem to="/admin" icon={Settings} label="Overview" onNav={() => setOpen(false)} />
-            <NavItem to="/admin/users" icon={User} label="Users" onNav={() => setOpen(false)} />
-            <NavItem to="/admin/orders" icon={LayoutDashboard} label="Orders" onNav={() => setOpen(false)} />
-            <NavItem to="/admin/plans" icon={Settings} label="Plans" onNav={() => setOpen(false)} />
-            <NavItem to="/admin/content" icon={Settings} label="Site content" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/analytics" icon={BarChart3} label="Analytics" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/users" icon={User} label="Users & subs" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/orders" icon={ShoppingCart} label="Orders" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/plans" icon={DollarSign} label="Plans & pricing" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/content" icon={FileText} label="Site content" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/messages" icon={Mail} label="Messages" onNav={() => setOpen(false)} />
             <NavItem to="/admin/tutorial" icon={BookOpen} label="Tutorial quiz" onNav={() => setOpen(false)} />
             <NavItem to="/admin/practice" icon={BookOpen} label="Practice bank" onNav={() => setOpen(false)} />
           </>

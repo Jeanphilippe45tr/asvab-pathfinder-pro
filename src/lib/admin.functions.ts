@@ -277,3 +277,113 @@ export const adminListMessages = createServerFn({ method: "GET" })
     const { data } = await supabase.from("contact_messages").select("*").order("created_at", { ascending: false });
     return data ?? [];
   });
+
+export const adminMarkMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string; handled: boolean }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.from("contact_messages").update({ handled: data.handled }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.from("contact_messages").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteUser = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    if (data.userId === userId) throw new Error("You cannot delete yourself");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(data.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminResetUserPassword = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string; password: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    if (data.password.length < 6) throw new Error("Password too short");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.userId, { password: data.password });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminGrantSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { userId: string; planId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("subscriptions").insert({
+      user_id: data.userId,
+      plan_id: data.planId,
+      approved: true,
+      status: "active",
+      approved_by: userId,
+      approved_at: now,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminRevokeSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { subscriptionId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.from("subscriptions").delete().eq("id", data.subscriptionId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminAnalytics = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const [attempts, orders, plans, subs] = await Promise.all([
+      supabase.from("quiz_attempts").select("id,user_id,score,total,created_at, profiles(email)").order("created_at", { ascending: false }).limit(50),
+      supabase.from("orders").select("amount_cents,status,created_at"),
+      supabase.from("plans").select("id,name"),
+      supabase.from("subscriptions").select("plan_id, plans(name)"),
+    ]);
+    const o = orders.data ?? [];
+    const revenueByDay: Record<string, number> = {};
+    o.filter((x) => x.status === "paid").forEach((x) => {
+      const d = new Date(x.created_at).toISOString().slice(0, 10);
+      revenueByDay[d] = (revenueByDay[d] ?? 0) + (x.amount_cents ?? 0);
+    });
+    const subsByPlan: Record<string, number> = {};
+    (subs.data ?? []).forEach((s: any) => {
+      const name = s.plans?.name ?? "Unknown";
+      subsByPlan[name] = (subsByPlan[name] ?? 0) + 1;
+    });
+    return {
+      attempts: attempts.data ?? [],
+      revenueByDay,
+      subsByPlan,
+      totalOrders: o.length,
+      paidCount: o.filter((x) => x.status === "paid").length,
+      refundedCount: o.filter((x) => x.status === "refunded").length,
+    };
+  });
