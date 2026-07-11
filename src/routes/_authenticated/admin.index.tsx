@@ -8,7 +8,7 @@ import { Users, DollarSign, Clock, ShieldAlert, Mail } from "lucide-react";
 const meQ = queryOptions({ queryKey: ["me"], queryFn: () => getMyContext() });
 const q = queryOptions({ queryKey: ["admin", "overview"], queryFn: () => adminOverview() });
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_authenticated/admin/")({
   head: () => ({ meta: [{ title: "Admin — ASVAB Pro" }] }),
   beforeLoad: async ({ context }) => {
     const me = await context.queryClient.ensureQueryData(meQ);
