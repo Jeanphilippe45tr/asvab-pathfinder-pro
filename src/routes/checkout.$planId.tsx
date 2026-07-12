@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { createPendingOrder } from "@/lib/user.functions";
 import { getPlans } from "@/lib/site.functions";
 import { toast } from "sonner";
-import { MessageCircle, ShieldCheck } from "lucide-react";
+import { MessageCircle, ShieldCheck, Phone } from "lucide-react";
 
 const WHATSAPP_NUMBER = "16183154497"; // +1 (618) 315-4497
+const PHONE_LINK = "tel:+16183154497";
 
 export const Route = createFileRoute("/checkout/$planId")({
   head: () => ({ meta: [{ title: "Checkout — ASVAB Pro" }] }),
@@ -78,6 +79,12 @@ function Checkout() {
           >
             <MessageCircle className="mr-2 h-5 w-5" />
             {processing ? "Preparing your order…" : session ? "Contact admin on WhatsApp" : "Sign in to continue"}
+          </Button>
+          <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+            <a href={PHONE_LINK}>
+              <Phone className="mr-2 h-5 w-5" />
+              Call admin instead
+            </a>
           </Button>
           <p className="mt-4 flex items-center justify-center gap-1 text-center text-xs text-muted-foreground">
             <ShieldCheck className="h-3 w-3" /> Your subscription is activated by the admin after payment is confirmed.
