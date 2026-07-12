@@ -80,6 +80,12 @@ function Checkout() {
             <MessageCircle className="mr-2 h-5 w-5" />
             {processing ? "Preparing your order…" : session ? "Contact admin on WhatsApp" : "Sign in to continue"}
           </Button>
+          <Button asChild size="lg" variant="outline" className="mt-3 w-full">
+            <a href={PHONE_LINK}>
+              <Phone className="mr-2 h-5 w-5" />
+              Call admin instead
+            </a>
+          </Button>
           <p className="mt-4 flex items-center justify-center gap-1 text-center text-xs text-muted-foreground">
             <ShieldCheck className="h-3 w-3" /> Your subscription is activated by the admin after payment is confirmed.
           </p>
