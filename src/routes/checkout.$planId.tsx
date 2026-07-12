@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { createPendingOrder } from "@/lib/user.functions";
 import { getPlans } from "@/lib/site.functions";
 import { toast } from "sonner";
-import { MessageCircle, ShieldCheck } from "lucide-react";
+import { MessageCircle, ShieldCheck, Phone } from "lucide-react";
 
 const WHATSAPP_NUMBER = "16183154497"; // +1 (618) 315-4497
+const PHONE_LINK = "tel:+16183154497";
 
 export const Route = createFileRoute("/checkout/$planId")({
   head: () => ({ meta: [{ title: "Checkout — ASVAB Pro" }] }),
