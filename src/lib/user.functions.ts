@@ -25,21 +25,23 @@ export const getMyContext = createServerFn({ method: "GET" })
     };
   });
 
-export const simulatePayment = createServerFn({ method: "POST" })
+export const createPendingOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: { planId: string }) => d)
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: plan, error: planErr } = await supabase
       .from("plans")
-      .select("id,price_cents,active")
+      .select("id,name,price_cents,active")
       .eq("id", data.planId)
       .maybeSingle();
     if (planErr || !plan || !plan.active) throw new Error("Plan not found");
 
+    const { data: profile } = await supabase.from("profiles").select("email,full_name").eq("id", userId).maybeSingle();
+
     const { data: order, error: oErr } = await supabase
       .from("orders")
-      .insert({ user_id: userId, plan_id: plan.id, amount_cents: plan.price_cents, status: "paid" })
+      .insert({ user_id: userId, plan_id: plan.id, amount_cents: plan.price_cents, status: "pending" })
       .select()
       .single();
     if (oErr) throw new Error(oErr.message);
@@ -52,7 +54,14 @@ export const simulatePayment = createServerFn({ method: "POST" })
       approved: false,
     });
     if (sErr) throw new Error(sErr.message);
-    return { ok: true, orderId: order.id };
+    return {
+      ok: true,
+      orderId: order.id,
+      planName: plan.name,
+      priceCents: plan.price_cents,
+      email: profile?.email ?? "",
+      fullName: profile?.full_name ?? "",
+    };
   });
 
 export const getPracticeQuestions = createServerFn({ method: "GET" })
