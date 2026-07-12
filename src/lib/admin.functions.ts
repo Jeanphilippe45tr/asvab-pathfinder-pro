@@ -73,8 +73,19 @@ export const adminApproveSubscription = createServerFn({ method: "POST" })
     const upd = data.approve
       ? { approved: true, status: "active", approved_by: userId, approved_at: new Date().toISOString() }
       : { approved: false, status: "cancelled" };
-    const { error } = await supabase.from("subscriptions").update(upd).eq("id", data.subscriptionId);
+    const { data: sub, error } = await supabase
+      .from("subscriptions")
+      .update(upd)
+      .eq("id", data.subscriptionId)
+      .select("order_id")
+      .maybeSingle();
     if (error) throw new Error(error.message);
+    if (sub?.order_id) {
+      await supabase
+        .from("orders")
+        .update({ status: data.approve ? "paid" : "cancelled" })
+        .eq("id", sub.order_id);
+    }
     return { ok: true };
   });
 
