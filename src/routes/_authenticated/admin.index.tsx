@@ -3,7 +3,7 @@ import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { adminOverview } from "@/lib/admin.functions";
 import { getMyContext } from "@/lib/user.functions";
 import { Card } from "@/components/ui/card";
-import { Users, DollarSign, Clock, ShieldAlert, Mail, BarChart3, ShoppingCart, FileText, BookOpen, Settings } from "lucide-react";
+import { Users, DollarSign, Clock, ShieldAlert, Mail, BarChart3, ShoppingCart, FileText, BookOpen, Settings, GraduationCap, FolderLock } from "lucide-react";
 
 const meQ = queryOptions({ queryKey: ["me"], queryFn: () => getMyContext() });
 const q = queryOptions({ queryKey: ["admin", "overview"], queryFn: () => adminOverview() });
@@ -38,6 +38,8 @@ function AdminOverview() {
     { icon: Mail, label: "Messages", desc: "Contact form inbox", to: "/admin/messages" },
     { icon: BookOpen, label: "Tutorial quiz", desc: "10-question, 7-minute pre-signup test", to: "/admin/tutorial" },
     { icon: BookOpen, label: "Practice bank", desc: "Full ASVAB question library", to: "/admin/practice" },
+    { icon: GraduationCap, label: "Courses & lessons", desc: "Author paid ASVAB courses", to: "/admin/courses" },
+    { icon: FolderLock, label: "Protected files", desc: "Upload course docs or per-user private files", to: "/admin/files" },
   ];
 
   return (
