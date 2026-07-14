@@ -499,11 +499,17 @@ export const adminListFiles = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     await assertAdmin(supabase, userId);
-    const { data } = await supabase
+    const { data: files } = await supabase
       .from("protected_files")
-      .select("*, courses(title), profiles!protected_files_user_id_fkey(email,full_name)")
+      .select("*, courses(title)")
       .order("created_at", { ascending: false });
-    return data ?? [];
+    const userIds = Array.from(new Set((files ?? []).filter((f: any) => f.user_id).map((f: any) => f.user_id)));
+    let profilesMap: Record<string, any> = {};
+    if (userIds.length) {
+      const { data: profs } = await supabase.from("profiles").select("id,email,full_name").in("id", userIds);
+      (profs ?? []).forEach((p: any) => { profilesMap[p.id] = p; });
+    }
+    return (files ?? []).map((f: any) => ({ ...f, profiles: f.user_id ? profilesMap[f.user_id] : null }));
   });
 
 // Returns a signed URL the admin uses to PUT a file into storage.
