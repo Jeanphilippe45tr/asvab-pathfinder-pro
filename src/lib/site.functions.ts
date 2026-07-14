@@ -12,6 +12,8 @@ export const getSiteSettings = createServerFn({ method: "GET" }).handler(async (
   const { data } = await serverPublic().from("site_settings").select("key,value");
   const map: Record<string, string> = {};
   (data ?? []).forEach((r) => (map[r.key] = r.value));
+  map.contact_email = "marklarry111111111@gmail.com";
+  map.contact_phone = "+1 (618) 315-4497";
   return map;
 });
 
