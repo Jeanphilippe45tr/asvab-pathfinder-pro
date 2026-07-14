@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, redirect, Link, useRouter } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { Shield, LayoutDashboard, BookOpen, User, LogOut, Settings, Menu, Mail, BarChart3, ShoppingCart, DollarSign, FileText } from "lucide-react";
+import { Shield, LayoutDashboard, BookOpen, User, LogOut, Settings, Menu, Mail, BarChart3, ShoppingCart, DollarSign, FileText, FolderLock, GraduationCap } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
@@ -37,7 +37,9 @@ function AuthLayout() {
     <>
       <nav className="flex-1 space-y-1 p-3 text-sm">
         <NavItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" onNav={() => setOpen(false)} />
+        <NavItem to="/courses" icon={GraduationCap} label="My courses" onNav={() => setOpen(false)} />
         <NavItem to="/practice" icon={BookOpen} label="Practice" onNav={() => setOpen(false)} />
+        <NavItem to="/files" icon={FolderLock} label="My files" onNav={() => setOpen(false)} />
         <NavItem to="/account" icon={User} label="Account" onNav={() => setOpen(false)} />
         {isAdmin && (
           <>
@@ -51,6 +53,8 @@ function AuthLayout() {
             <NavItem to="/admin/messages" icon={Mail} label="Messages" onNav={() => setOpen(false)} />
             <NavItem to="/admin/tutorial" icon={BookOpen} label="Tutorial quiz" onNav={() => setOpen(false)} />
             <NavItem to="/admin/practice" icon={BookOpen} label="Practice bank" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/courses" icon={GraduationCap} label="Courses & lessons" onNav={() => setOpen(false)} />
+            <NavItem to="/admin/files" icon={FolderLock} label="Protected files" onNav={() => setOpen(false)} />
           </>
         )}
       </nav>

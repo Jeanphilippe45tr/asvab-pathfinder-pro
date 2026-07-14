@@ -48,21 +48,26 @@ function Dashboard() {
       )}
 
       {activeSub && (
-        <div className="mt-6 grid gap-4 md:grid-cols-3">
+        <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="p-6">
             <div className="flex items-center gap-2 text-sm text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-accent" /> Active plan</div>
             <div className="mt-2 text-xl font-bold">{activeSub.plans?.name}</div>
             <Badge variant="outline" className="mt-2">Tier {activeSub.plans?.tier}</Badge>
           </Card>
           <Card className="p-6">
-            <div className="text-sm text-muted-foreground">Practice tests</div>
+            <div className="text-sm text-muted-foreground">Courses</div>
+            <div className="mt-2 text-xl font-bold">Learn</div>
+            <Button asChild size="sm" className="mt-3"><Link to="/courses">Open courses</Link></Button>
+          </Card>
+          <Card className="p-6">
+            <div className="text-sm text-muted-foreground">Practice</div>
             <div className="mt-2 text-xl font-bold">Ready</div>
             <Button asChild size="sm" className="mt-3"><Link to="/practice">Start practicing</Link></Button>
           </Card>
           <Card className="p-6">
-            <div className="text-sm text-muted-foreground">Attempts</div>
-            <div className="mt-2 text-xl font-bold">Track your growth</div>
-            <Button asChild size="sm" variant="outline" className="mt-3"><Link to="/account">View account</Link></Button>
+            <div className="text-sm text-muted-foreground">My files</div>
+            <div className="mt-2 text-xl font-bold">Private</div>
+            <Button asChild size="sm" variant="outline" className="mt-3"><Link to="/files">View files</Link></Button>
           </Card>
         </div>
       )}
