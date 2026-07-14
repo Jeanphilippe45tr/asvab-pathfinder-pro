@@ -398,3 +398,176 @@ export const adminAnalytics = createServerFn({ method: "GET" })
       refundedCount: o.filter((x) => x.status === "refunded").length,
     };
   });
+
+// ============ COURSES ============
+export const adminListCourses = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { data } = await supabase.from("courses").select("*").order("sort_order");
+    return data ?? [];
+  });
+
+export const adminUpsertCourse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: {
+    id?: string;
+    title: string;
+    description?: string;
+    min_tier: number;
+    sort_order: number;
+    published: boolean;
+  }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    if (data.id) {
+      const { error } = await supabase.from("courses").update(data).eq("id", data.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabase.from("courses").insert(data);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+export const adminDeleteCourse = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    // Delete storage objects too
+    const { data: files } = await supabase.from("protected_files").select("storage_path").eq("course_id", data.id);
+    if (files && files.length) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.storage.from("protected-files").remove(files.map((f: any) => f.storage_path));
+    }
+    const { error } = await supabase.from("courses").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminListLessons = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { courseId: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { data: rows } = await supabase.from("lessons").select("*").eq("course_id", data.courseId).order("sort_order");
+    return rows ?? [];
+  });
+
+export const adminUpsertLesson = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: {
+    id?: string;
+    course_id: string;
+    title: string;
+    content?: string;
+    video_url?: string;
+    sort_order: number;
+  }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    if (data.id) {
+      const { error } = await supabase.from("lessons").update(data).eq("id", data.id);
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabase.from("lessons").insert(data);
+      if (error) throw new Error(error.message);
+    }
+    return { ok: true };
+  });
+
+export const adminDeleteLesson = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { error } = await supabase.from("lessons").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ============ FILES ============
+export const adminListFiles = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { data } = await supabase
+      .from("protected_files")
+      .select("*, courses(title), profiles!protected_files_user_id_fkey(email,full_name)")
+      .order("created_at", { ascending: false });
+    return data ?? [];
+  });
+
+// Returns a signed URL the admin uses to PUT a file into storage.
+export const adminGetUploadUrl = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { fileName: string; scope: "course" | "user" }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const safe = data.fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+    const path = `${data.scope}/${crypto.randomUUID()}-${safe}`;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: signed, error } = await supabaseAdmin.storage
+      .from("protected-files")
+      .createSignedUploadUrl(path);
+    if (error) throw new Error(error.message);
+    return { path, token: signed.token, signedUrl: signed.signedUrl };
+  });
+
+export const adminRegisterFile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: {
+    scope: "course" | "user";
+    course_id?: string;
+    lesson_id?: string;
+    user_id?: string;
+    storage_path: string;
+    file_name: string;
+    mime_type?: string;
+    size_bytes?: number;
+  }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    if (data.scope === "course" && !data.course_id) throw new Error("course_id required");
+    if (data.scope === "user" && !data.user_id) throw new Error("user_id required");
+    const { error } = await supabase.from("protected_files").insert({
+      scope: data.scope,
+      course_id: data.scope === "course" ? data.course_id : null,
+      lesson_id: data.scope === "course" ? data.lesson_id ?? null : null,
+      user_id: data.scope === "user" ? data.user_id : null,
+      storage_path: data.storage_path,
+      file_name: data.file_name,
+      mime_type: data.mime_type ?? null,
+      size_bytes: data.size_bytes ?? null,
+      uploaded_by: userId,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminDeleteFile = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { id: string }) => d)
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    await assertAdmin(supabase, userId);
+    const { data: file } = await supabase.from("protected_files").select("storage_path").eq("id", data.id).maybeSingle();
+    if (file) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      await supabaseAdmin.storage.from("protected-files").remove([file.storage_path]);
+    }
+    const { error } = await supabase.from("protected_files").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
